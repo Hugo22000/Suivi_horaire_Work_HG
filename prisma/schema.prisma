@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  entries      DayEntry[]
+}
+
+model DayEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       String
+  matinDebut String   @default("")
+  matinFin   String   @default("")
+  apremDebut String   @default("")
+  apremFin   String   @default("")
+  leave      String   @default("none")
+  transport  Json?
+  notes      String?
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, date])
+}

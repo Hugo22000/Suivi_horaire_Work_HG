@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTrackerStore } from "@/lib/store";
+import { useUiPreferencesStore } from "@/lib/uiStore";
 import {
   dayTotalMinutes,
   filterVisibleDays,
@@ -16,8 +17,8 @@ import DayCard from "./DayCard";
 export default function WeekView() {
   const [anchor, setAnchor] = useState(() => new Date());
   const entries = useTrackerStore((s) => s.entries);
-  const showWeekends = useTrackerStore((s) => s.showWeekends);
-  const setShowWeekends = useTrackerStore((s) => s.setShowWeekends);
+  const showWeekends = useUiPreferencesStore((s) => s.showWeekends);
+  const setShowWeekends = useUiPreferencesStore((s) => s.setShowWeekends);
   const setWeekLeave = useTrackerStore((s) => s.setWeekLeave);
   const days = useMemo(
     () => filterVisibleDays(getWeekDays(anchor), showWeekends),

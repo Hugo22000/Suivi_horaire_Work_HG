@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTrackerStore } from "@/lib/store";
+import { useUiPreferencesStore } from "@/lib/uiStore";
 import {
   dayTotalMinutes,
   filterVisibleDays,
@@ -23,8 +24,8 @@ export default function CalendarView() {
   const [anchor, setAnchor] = useState(() => new Date());
   const [selected, setSelected] = useState<string | null>(null);
   const entries = useTrackerStore((s) => s.entries);
-  const showWeekends = useTrackerStore((s) => s.showWeekends);
-  const setShowWeekends = useTrackerStore((s) => s.setShowWeekends);
+  const showWeekends = useUiPreferencesStore((s) => s.showWeekends);
+  const setShowWeekends = useUiPreferencesStore((s) => s.setShowWeekends);
   const days = useMemo(
     () => filterVisibleDays(getMonthDays(anchor), showWeekends),
     [anchor, showWeekends]
