@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 
+// Session token utilities (JWT via jose)
 const SESSION_COOKIE = "session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
