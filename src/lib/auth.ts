@@ -4,10 +4,17 @@ import { SignJWT, jwtVerify } from "jose";
 const SESSION_COOKIE = "session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
+// Stable fallback used ONLY in non-production environments so local/preview
+// development works without extra setup. In production, AUTH_SECRET is required.
+const DEV_FALLBACK_SECRET = "dev-only-insecure-secret-change-me-in-production";
+
 function getSecretKey() {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
-    throw new Error("AUTH_SECRET environment variable is not set");
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("AUTH_SECRET environment variable is not set");
+    }
+    return new TextEncoder().encode(DEV_FALLBACK_SECRET);
   }
   return new TextEncoder().encode(secret);
 }
