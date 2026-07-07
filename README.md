@@ -8,6 +8,7 @@ Application Next.js pour enregistrer ses heures de travail semaine par semaine e
 - **Trajet du jour** : choix du moyen de transport (Vélib + Navette, Voiture, RER, Autre solution), avec point de départ, point d'arrivée, distance en km (pour la voiture) et description libre (pour "autre").
 - **Vue calendrier** : vue mensuelle type calendrier avec le total d'heures et le moyen de transport de chaque jour, et édition rapide au clic.
 - **Récapitulatif** : tableaux récapitulatifs semaine par semaine, vue mois et vue année, avec totaux et moyennes.
+- **Export Excel** : export des données (détail journalier + récap semaine + récap mois) en fichier `.xlsx`, pour toutes les années ou une année précise.
 
 Les données sont stockées localement dans le navigateur (`localStorage`), il n'y a donc aucune base de données ni configuration à faire pour déployer l'application.
 
@@ -35,3 +36,4 @@ Ouvrir [http://localhost:3000](http://localhost:3000).
 - [Tailwind CSS](https://tailwindcss.com)
 - [Zustand](https://github.com/pmndrs/zustand) (état + persistance `localStorage`)
 - [date-fns](https://date-fns.org) (calculs de dates, locale française)
+- [ExcelJS](https://github.com/exceljs/exceljs) (génération du fichier d'export `.xlsx`)

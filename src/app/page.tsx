@@ -4,13 +4,15 @@ import { useState } from "react";
 import WeekView from "@/components/WeekView";
 import CalendarView from "@/components/CalendarView";
 import SummaryView from "@/components/SummaryView";
+import ExportView from "@/components/ExportView";
 
-type View = "saisie" | "calendrier" | "recapitulatif";
+type View = "saisie" | "calendrier" | "recapitulatif" | "export";
 
 const NAV: [View, string][] = [
   ["saisie", "Saisie"],
   ["calendrier", "Calendrier"],
   ["recapitulatif", "Récapitulatif"],
+  ["export", "Export"],
 ];
 
 export default function Home() {
@@ -27,7 +29,7 @@ export default function Home() {
             Heures de travail et trajets, semaine par semaine
           </p>
         </div>
-        <nav className="flex gap-1 rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
+        <nav className="flex flex-wrap gap-1 rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
           {NAV.map(([value, label]) => (
             <button
               key={value}
@@ -48,6 +50,7 @@ export default function Home() {
         {view === "saisie" && <WeekView />}
         {view === "calendrier" && <CalendarView />}
         {view === "recapitulatif" && <SummaryView />}
+        {view === "export" && <ExportView />}
       </main>
 
       <footer className="pt-4 text-center text-xs text-neutral-400 dark:text-neutral-600">
