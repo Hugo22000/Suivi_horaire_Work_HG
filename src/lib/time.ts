@@ -31,6 +31,15 @@ export function getWeekDays(anchor: Date): Date[] {
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));
 }
 
+export function isWeekendDay(date: Date): boolean {
+  const day = date.getDay();
+  return day === 0 || day === 6;
+}
+
+export function filterVisibleDays(days: Date[], showWeekends: boolean): Date[] {
+  return showWeekends ? days : days.filter((d) => !isWeekendDay(d));
+}
+
 export function getWeekStart(anchor: Date): Date {
   return startOfWeek(anchor, WEEK_OPTIONS);
 }

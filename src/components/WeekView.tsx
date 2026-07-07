@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useTrackerStore } from "@/lib/store";
 import {
   dayTotalMinutes,
+  filterVisibleDays,
   formatMinutesAsHours,
   formatWeekLabel,
   getWeekDays,
@@ -15,7 +16,12 @@ import DayCard from "./DayCard";
 export default function WeekView() {
   const [anchor, setAnchor] = useState(() => new Date());
   const entries = useTrackerStore((s) => s.entries);
-  const days = useMemo(() => getWeekDays(anchor), [anchor]);
+  const showWeekends = useTrackerStore((s) => s.showWeekends);
+  const setShowWeekends = useTrackerStore((s) => s.setShowWeekends);
+  const days = useMemo(
+    () => filterVisibleDays(getWeekDays(anchor), showWeekends),
+    [anchor, showWeekends]
+  );
 
   const weekTotal = days.reduce((sum, d) => sum + dayTotalMinutes(entries[toISODate(d)]), 0);
 
@@ -49,6 +55,16 @@ export default function WeekView() {
           Total semaine : {formatMinutesAsHours(weekTotal)}
         </div>
       </div>
+
+      <label className="flex w-fit items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
+        <input
+          type="checkbox"
+          checked={!showWeekends}
+          onChange={(e) => setShowWeekends(!e.target.checked)}
+          className="h-3.5 w-3.5"
+        />
+        Jours ouvrés uniquement (masquer samedi et dimanche)
+      </label>
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
         {days.map((day) => (

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useTrackerStore } from "@/lib/store";
 import {
   dayTotalMinutes,
+  filterVisibleDays,
   formatMinutesAsHours,
   formatMonthLabel,
   fromISODate,
@@ -15,13 +16,21 @@ import {
 import { TRANSPORT_ICONS } from "@/lib/types";
 import DayCard from "./DayCard";
 
-const WEEKDAY_LABELS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const WEEKDAY_LABELS_FULL = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const WEEKDAY_LABELS_WORKDAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven"];
 
 export default function CalendarView() {
   const [anchor, setAnchor] = useState(() => new Date());
   const [selected, setSelected] = useState<string | null>(null);
   const entries = useTrackerStore((s) => s.entries);
-  const days = useMemo(() => getMonthDays(anchor), [anchor]);
+  const showWeekends = useTrackerStore((s) => s.showWeekends);
+  const setShowWeekends = useTrackerStore((s) => s.setShowWeekends);
+  const days = useMemo(
+    () => filterVisibleDays(getMonthDays(anchor), showWeekends),
+    [anchor, showWeekends]
+  );
+  const weekdayLabels = showWeekends ? WEEKDAY_LABELS_FULL : WEEKDAY_LABELS_WORKDAYS;
+  const gridColsClass = showWeekends ? "grid-cols-7" : "grid-cols-5";
   const todayIso = toISODate(new Date());
 
   return (
@@ -52,15 +61,27 @@ export default function CalendarView() {
         </div>
       </div>
 
+      <label className="flex w-fit items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
+        <input
+          type="checkbox"
+          checked={!showWeekends}
+          onChange={(e) => setShowWeekends(!e.target.checked)}
+          className="h-3.5 w-3.5"
+        />
+        Jours ouvrés uniquement (masquer samedi et dimanche)
+      </label>
+
       <div className="overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
-        <div className="grid grid-cols-7 bg-neutral-100 text-center text-xs font-semibold text-neutral-500 dark:bg-neutral-800/60 dark:text-neutral-400">
-          {WEEKDAY_LABELS.map((d) => (
+        <div
+          className={`grid ${gridColsClass} bg-neutral-100 text-center text-xs font-semibold text-neutral-500 dark:bg-neutral-800/60 dark:text-neutral-400`}
+        >
+          {weekdayLabels.map((d) => (
             <div key={d} className="py-2">
               {d}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7">
+        <div className={`grid ${gridColsClass}`}>
           {days.map((day) => {
             const iso = toISODate(day);
             const entry = entries[iso];

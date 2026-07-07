@@ -4,6 +4,8 @@ import type { DayEntry, Transport } from "./types";
 
 interface TrackerState {
   entries: Record<string, DayEntry>;
+  showWeekends: boolean;
+  setShowWeekends: (value: boolean) => void;
   setDayField: (
     date: string,
     field: "matinDebut" | "matinFin" | "apremDebut" | "apremFin" | "notes",
@@ -18,6 +20,8 @@ export const useTrackerStore = create<TrackerState>()(
   persist(
     (set, get) => ({
       entries: {},
+      showWeekends: true,
+      setShowWeekends: (value) => set({ showWeekends: value }),
       setDayField: (date, field, value) =>
         set((state) => {
           const existing = state.entries[date] ?? {
