@@ -22,6 +22,15 @@ export interface Transport {
   description?: string;
 }
 
+export type LeaveStatus = "none" | "full" | "morning" | "afternoon";
+
+export const LEAVE_LABELS: Record<LeaveStatus, string> = {
+  none: "Travaillé",
+  full: "Congé (journée complète)",
+  morning: "Congé (matin)",
+  afternoon: "Congé (après-midi)",
+};
+
 export interface DayEntry {
   date: string; // format YYYY-MM-DD
   matinDebut: string; // format HH:mm
@@ -30,6 +39,7 @@ export interface DayEntry {
   apremFin: string;
   transport?: Transport;
   notes?: string;
+  leave?: LeaveStatus;
 }
 
 export const emptyTransport = (): Transport => ({

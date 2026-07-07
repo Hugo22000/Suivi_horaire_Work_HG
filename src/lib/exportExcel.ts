@@ -1,6 +1,6 @@
 import { aggregateByMonth, aggregateByWeek } from "./aggregate";
 import { dayTotalMinutes, formatHoursDecimal, formatMonthLabel, formatWeekLabel, fromISODate, toISODate } from "./time";
-import { TRANSPORT_LABELS, type DayEntry } from "./types";
+import { LEAVE_LABELS, TRANSPORT_LABELS, type DayEntry } from "./types";
 
 const HEADER_FILL = { type: "pattern" as const, pattern: "solid" as const, fgColor: { argb: "FF4F46E5" } };
 const HEADER_FONT = { bold: true, color: { argb: "FFFFFFFF" } };
@@ -56,6 +56,7 @@ function buildDailySheet(workbook: import("exceljs").Workbook, entries: Record<s
     { header: "Début après-midi", key: "apremDebut", width: 16 },
     { header: "Fin après-midi", key: "apremFin", width: 16 },
     { header: "Total (h)", key: "total", width: 10 },
+    { header: "Congé", key: "conge", width: 20 },
     { header: "Moyen de transport", key: "transport", width: 18 },
     { header: "Point de départ", key: "depart", width: 18 },
     { header: "Point d'arrivée", key: "arrivee", width: 18 },
@@ -68,7 +69,8 @@ function buildDailySheet(workbook: import("exceljs").Workbook, entries: Record<s
   for (const date of sortedDates) {
     const entry = entries[date];
     const totalMinutes = dayTotalMinutes(entry);
-    if (totalMinutes <= 0 && !entry.transport) continue;
+    const leave = entry.leave ?? "none";
+    if (totalMinutes <= 0 && !entry.transport && leave === "none") continue;
 
     sheet.addRow({
       date,
@@ -78,6 +80,7 @@ function buildDailySheet(workbook: import("exceljs").Workbook, entries: Record<s
       apremDebut: entry.apremDebut,
       apremFin: entry.apremFin,
       total: totalMinutes > 0 ? Number(formatHoursDecimal(totalMinutes)) : "",
+      conge: leave === "none" ? "" : LEAVE_LABELS[leave],
       transport: entry.transport ? TRANSPORT_LABELS[entry.transport.mode] : "",
       depart: entry.transport?.depart ?? "",
       arrivee: entry.transport?.arrivee ?? "",
@@ -92,6 +95,7 @@ function buildWeeklySheet(workbook: import("exceljs").Workbook, entries: Record<
   sheet.columns = [
     { header: "Semaine", key: "semaine", width: 42 },
     { header: "Jours travaillés", key: "jours", width: 16 },
+    { header: "Jours de congé", key: "conges", width: 16 },
     { header: "Total heures", key: "total", width: 14 },
     { header: "Moyenne / jour (h)", key: "moyenne", width: 18 },
   ];
@@ -102,8 +106,9 @@ function buildWeeklySheet(workbook: import("exceljs").Workbook, entries: Record<
     sheet.addRow({
       semaine: formatWeekLabel(week.start),
       jours: week.daysWorked,
+      conges: week.daysOnLeave,
       total: Number(formatHoursDecimal(week.totalMinutes)),
-      moyenne: Number(formatHoursDecimal(week.totalMinutes / week.daysWorked)),
+      moyenne: week.daysWorked > 0 ? Number(formatHoursDecimal(week.totalMinutes / week.daysWorked)) : "",
     });
   }
 }
@@ -113,6 +118,7 @@ function buildMonthlySheet(workbook: import("exceljs").Workbook, entries: Record
   sheet.columns = [
     { header: "Mois", key: "mois", width: 20 },
     { header: "Jours travaillés", key: "jours", width: 16 },
+    { header: "Jours de congé", key: "conges", width: 16 },
     { header: "Total heures", key: "total", width: 14 },
     { header: "Moyenne / jour (h)", key: "moyenne", width: 18 },
   ];
@@ -123,8 +129,9 @@ function buildMonthlySheet(workbook: import("exceljs").Workbook, entries: Record
     sheet.addRow({
       mois: formatMonthLabel(month.start),
       jours: month.daysWorked,
+      conges: month.daysOnLeave,
       total: Number(formatHoursDecimal(month.totalMinutes)),
-      moyenne: Number(formatHoursDecimal(month.totalMinutes / month.daysWorked)),
+      moyenne: month.daysWorked > 0 ? Number(formatHoursDecimal(month.totalMinutes / month.daysWorked)) : "",
     });
   }
 }

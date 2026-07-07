@@ -86,6 +86,7 @@ export default function CalendarView() {
             const iso = toISODate(day);
             const entry = entries[iso];
             const total = dayTotalMinutes(entry);
+            const leave = entry?.leave ?? "none";
             const inMonth = isInMonth(day, anchor);
             const isToday = iso === todayIso;
             const isSelected = iso === selected;
@@ -107,6 +108,16 @@ export default function CalendarView() {
                 >
                   {day.getDate()}
                 </span>
+                {leave === "full" && (
+                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">
+                    🌴 Congé
+                  </span>
+                )}
+                {(leave === "morning" || leave === "afternoon") && (
+                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">
+                    🌴 ½ congé
+                  </span>
+                )}
                 {total > 0 && (
                   <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
                     {formatMinutesAsHours(total)}

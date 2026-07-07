@@ -7,6 +7,7 @@ export interface PeriodTotal {
   start: Date;
   totalMinutes: number;
   daysWorked: number;
+  daysOnLeave: number;
 }
 
 function aggregateBy(
@@ -17,16 +18,16 @@ function aggregateBy(
 
   for (const entry of Object.values(entries)) {
     const minutes = dayTotalMinutes(entry);
-    if (minutes <= 0) continue;
+    const leave = entry.leave ?? "none";
+    if (minutes <= 0 && leave === "none") continue;
+
     const date = fromISODate(entry.date);
     const { key, start } = keyFor(date);
-    const existing = map.get(key);
-    if (existing) {
-      existing.totalMinutes += minutes;
-      existing.daysWorked += 1;
-    } else {
-      map.set(key, { key, start, totalMinutes: minutes, daysWorked: 1 });
-    }
+    const existing = map.get(key) ?? { key, start, totalMinutes: 0, daysWorked: 0, daysOnLeave: 0 };
+    existing.totalMinutes += minutes;
+    if (minutes > 0) existing.daysWorked += 1;
+    if (leave !== "none") existing.daysOnLeave += 1;
+    map.set(key, existing);
   }
 
   return Array.from(map.values()).sort((a, b) => b.start.getTime() - a.start.getTime());
@@ -54,7 +55,7 @@ export function monthsForYear(entries: Record<string, DayEntry>, year: number): 
     const monthDate = new Date(start.getFullYear(), i, 1);
     const key = toISODate(monthDate);
     const found = months.find((m) => m.key === key);
-    result.push(found ?? { key, start: monthDate, totalMinutes: 0, daysWorked: 0 });
+    result.push(found ?? { key, start: monthDate, totalMinutes: 0, daysWorked: 0, daysOnLeave: 0 });
   }
   return result;
 }
@@ -62,7 +63,10 @@ export function monthsForYear(entries: Record<string, DayEntry>, year: number): 
 export function availableYears(entries: Record<string, DayEntry>): number[] {
   const years = new Set<number>();
   for (const entry of Object.values(entries)) {
-    if (dayTotalMinutes(entry) > 0) years.add(fromISODate(entry.date).getFullYear());
+    const leave = entry.leave ?? "none";
+    if (dayTotalMinutes(entry) > 0 || leave !== "none") {
+      years.add(fromISODate(entry.date).getFullYear());
+    }
   }
   years.add(new Date().getFullYear());
   return Array.from(years).sort((a, b) => b - a);

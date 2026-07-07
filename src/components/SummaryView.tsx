@@ -52,7 +52,7 @@ function TableShell({
 }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
-      <table className="w-full min-w-[560px] text-sm">
+      <table className="w-full min-w-[640px] text-sm">
         <thead className="bg-neutral-100 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:bg-neutral-800/60 dark:text-neutral-400">
           <tr>
             {columns.map((c) => (
@@ -75,16 +75,17 @@ function WeeklyTable() {
   if (weeks.length === 0) return <EmptyState />;
 
   return (
-    <TableShell columns={["Semaine", "Jours travaillés", "Total heures", "Moyenne / jour"]}>
+    <TableShell columns={["Semaine", "Jours travaillés", "Jours de congé", "Total heures", "Moyenne / jour"]}>
       {weeks.map((w) => (
         <tr key={w.key} className="bg-white dark:bg-neutral-900">
           <td className="px-4 py-2.5 capitalize">{formatWeekLabel(w.start)}</td>
           <td className="px-4 py-2.5">{w.daysWorked}</td>
+          <td className="px-4 py-2.5">{w.daysOnLeave || "—"}</td>
           <td className="px-4 py-2.5 font-semibold text-indigo-600 dark:text-indigo-400">
             {formatMinutesAsHours(w.totalMinutes)}
           </td>
           <td className="px-4 py-2.5">
-            {formatHoursDecimal(w.totalMinutes / w.daysWorked)} h
+            {w.daysWorked > 0 ? `${formatHoursDecimal(w.totalMinutes / w.daysWorked)} h` : "—"}
           </td>
         </tr>
       ))}
@@ -99,16 +100,17 @@ function MonthlyTable() {
   if (months.length === 0) return <EmptyState />;
 
   return (
-    <TableShell columns={["Mois", "Jours travaillés", "Total heures", "Moyenne / jour"]}>
+    <TableShell columns={["Mois", "Jours travaillés", "Jours de congé", "Total heures", "Moyenne / jour"]}>
       {months.map((m) => (
         <tr key={m.key} className="bg-white dark:bg-neutral-900">
           <td className="px-4 py-2.5 capitalize">{formatMonthLabel(m.start)}</td>
           <td className="px-4 py-2.5">{m.daysWorked}</td>
+          <td className="px-4 py-2.5">{m.daysOnLeave || "—"}</td>
           <td className="px-4 py-2.5 font-semibold text-indigo-600 dark:text-indigo-400">
             {formatMinutesAsHours(m.totalMinutes)}
           </td>
           <td className="px-4 py-2.5">
-            {formatHoursDecimal(m.totalMinutes / m.daysWorked)} h
+            {m.daysWorked > 0 ? `${formatHoursDecimal(m.totalMinutes / m.daysWorked)} h` : "—"}
           </td>
         </tr>
       ))}
@@ -124,10 +126,11 @@ function YearlyTable() {
   const months = useMemo(() => monthsForYear(entries, year), [entries, year]);
   const yearTotal = months.reduce((sum, m) => sum + m.totalMinutes, 0);
   const yearDays = months.reduce((sum, m) => sum + m.daysWorked, 0);
+  const yearLeaveDays = months.reduce((sum, m) => sum + m.daysOnLeave, 0);
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
@@ -140,15 +143,17 @@ function YearlyTable() {
           ))}
         </select>
         <div className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white">
-          Total {year} : {formatMinutesAsHours(yearTotal)} ({yearDays} jours)
+          Total {year} : {formatMinutesAsHours(yearTotal)} ({yearDays} jours travaillés, {yearLeaveDays}{" "}
+          jours de congé)
         </div>
       </div>
 
-      <TableShell columns={["Mois", "Jours travaillés", "Total heures", "Moyenne / jour"]}>
+      <TableShell columns={["Mois", "Jours travaillés", "Jours de congé", "Total heures", "Moyenne / jour"]}>
         {months.map((m) => (
           <tr key={m.key} className="bg-white dark:bg-neutral-900">
             <td className="px-4 py-2.5 capitalize">{format(m.start, "MMMM", { locale: fr })}</td>
             <td className="px-4 py-2.5">{m.daysWorked || "—"}</td>
+            <td className="px-4 py-2.5">{m.daysOnLeave || "—"}</td>
             <td className="px-4 py-2.5 font-semibold text-indigo-600 dark:text-indigo-400">
               {m.totalMinutes > 0 ? formatMinutesAsHours(m.totalMinutes) : "—"}
             </td>

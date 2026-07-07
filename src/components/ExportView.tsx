@@ -17,7 +17,7 @@ export default function ExportView() {
       Object.entries(entries).filter(
         ([date, entry]) =>
           (year === "all" || fromISODate(date).getFullYear() === year) &&
-          (dayTotalMinutes(entry) > 0 || entry.transport)
+          (dayTotalMinutes(entry) > 0 || entry.transport || (entry.leave && entry.leave !== "none"))
       ).length,
     [entries, year]
   );

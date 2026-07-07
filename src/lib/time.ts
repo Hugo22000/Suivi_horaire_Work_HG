@@ -122,10 +122,11 @@ export function minutesBetween(start: string, end: string): number {
 
 export function dayTotalMinutes(entry: DayEntry | undefined): number {
   if (!entry) return 0;
-  return (
-    minutesBetween(entry.matinDebut, entry.matinFin) +
-    minutesBetween(entry.apremDebut, entry.apremFin)
-  );
+  const leave = entry.leave ?? "none";
+  if (leave === "full") return 0;
+  const morning = leave === "morning" ? 0 : minutesBetween(entry.matinDebut, entry.matinFin);
+  const afternoon = leave === "afternoon" ? 0 : minutesBetween(entry.apremDebut, entry.apremFin);
+  return morning + afternoon;
 }
 
 export function formatMinutesAsHours(totalMinutes: number): string {

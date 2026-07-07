@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { DayEntry, Transport } from "./types";
+import { emptyDayEntry, type DayEntry, type LeaveStatus, type Transport } from "./types";
 
 interface TrackerState {
   entries: Record<string, DayEntry>;
@@ -12,6 +12,8 @@ interface TrackerState {
     value: string
   ) => void;
   setTransport: (date: string, transport: Transport | undefined) => void;
+  setLeave: (date: string, leave: LeaveStatus) => void;
+  setWeekLeave: (dates: string[], leave: LeaveStatus) => void;
   clearDay: (date: string) => void;
   getDay: (date: string) => DayEntry | undefined;
 }
@@ -24,13 +26,7 @@ export const useTrackerStore = create<TrackerState>()(
       setShowWeekends: (value) => set({ showWeekends: value }),
       setDayField: (date, field, value) =>
         set((state) => {
-          const existing = state.entries[date] ?? {
-            date,
-            matinDebut: "",
-            matinFin: "",
-            apremDebut: "",
-            apremFin: "",
-          };
+          const existing = state.entries[date] ?? emptyDayEntry(date);
           return {
             entries: {
               ...state.entries,
@@ -40,19 +36,32 @@ export const useTrackerStore = create<TrackerState>()(
         }),
       setTransport: (date, transport) =>
         set((state) => {
-          const existing = state.entries[date] ?? {
-            date,
-            matinDebut: "",
-            matinFin: "",
-            apremDebut: "",
-            apremFin: "",
-          };
+          const existing = state.entries[date] ?? emptyDayEntry(date);
           return {
             entries: {
               ...state.entries,
               [date]: { ...existing, transport },
             },
           };
+        }),
+      setLeave: (date, leave) =>
+        set((state) => {
+          const existing = state.entries[date] ?? emptyDayEntry(date);
+          return {
+            entries: {
+              ...state.entries,
+              [date]: { ...existing, leave },
+            },
+          };
+        }),
+      setWeekLeave: (dates, leave) =>
+        set((state) => {
+          const nextEntries = { ...state.entries };
+          for (const date of dates) {
+            const existing = nextEntries[date] ?? emptyDayEntry(date);
+            nextEntries[date] = { ...existing, leave };
+          }
+          return { entries: nextEntries };
         }),
       clearDay: (date) =>
         set((state) => {
