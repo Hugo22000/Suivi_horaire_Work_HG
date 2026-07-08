@@ -1,5 +1,5 @@
 import { startOfMonth, startOfYear } from "date-fns";
-import { dayTotalMinutes, fromISODate, getWeekStart, toISODate } from "./time";
+import { dayCommuteMinutes, dayTotalMinutes, fromISODate, getWeekStart, toISODate } from "./time";
 import type { DayEntry } from "./types";
 
 export interface PeriodTotal {
@@ -8,6 +8,7 @@ export interface PeriodTotal {
   totalMinutes: number;
   daysWorked: number;
   daysOnLeave: number;
+  commuteMinutes: number;
 }
 
 function aggregateBy(
@@ -18,13 +19,22 @@ function aggregateBy(
 
   for (const entry of Object.values(entries)) {
     const minutes = dayTotalMinutes(entry);
+    const commute = dayCommuteMinutes(entry);
     const leave = entry.leave ?? "none";
-    if (minutes <= 0 && leave === "none") continue;
+    if (minutes <= 0 && leave === "none" && commute <= 0) continue;
 
     const date = fromISODate(entry.date);
     const { key, start } = keyFor(date);
-    const existing = map.get(key) ?? { key, start, totalMinutes: 0, daysWorked: 0, daysOnLeave: 0 };
+    const existing = map.get(key) ?? {
+      key,
+      start,
+      totalMinutes: 0,
+      daysWorked: 0,
+      daysOnLeave: 0,
+      commuteMinutes: 0,
+    };
     existing.totalMinutes += minutes;
+    existing.commuteMinutes += commute;
     if (minutes > 0) existing.daysWorked += 1;
     if (leave !== "none") existing.daysOnLeave += 1;
     map.set(key, existing);
@@ -55,7 +65,9 @@ export function monthsForYear(entries: Record<string, DayEntry>, year: number): 
     const monthDate = new Date(start.getFullYear(), i, 1);
     const key = toISODate(monthDate);
     const found = months.find((m) => m.key === key);
-    result.push(found ?? { key, start: monthDate, totalMinutes: 0, daysWorked: 0, daysOnLeave: 0 });
+    result.push(
+      found ?? { key, start: monthDate, totalMinutes: 0, daysWorked: 0, daysOnLeave: 0, commuteMinutes: 0 }
+    );
   }
   return result;
 }

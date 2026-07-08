@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useTrackerStore } from "@/lib/store";
 import { useUiPreferencesStore } from "@/lib/uiStore";
 import {
+  dayCommuteMinutes,
   dayTotalMinutes,
   filterVisibleDays,
   formatMinutesAsHours,
@@ -76,6 +77,7 @@ export default function CalendarView() {
             const iso = toISODate(day);
             const entry = entries[iso];
             const total = dayTotalMinutes(entry);
+            const commute = dayCommuteMinutes(entry);
             const leave = entry?.leave ?? "none";
             const inMonth = isInMonth(day, anchor);
             const isToday = iso === todayIso;
@@ -116,6 +118,11 @@ export default function CalendarView() {
                 {total > 0 && (
                   <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
                     {formatMinutesAsHours(total)}
+                  </span>
+                )}
+                {commute > 0 && (
+                  <span className="rounded bg-teal-100 px-1.5 py-0.5 text-[11px] font-semibold text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">
+                    🕒 {formatMinutesAsHours(commute)}
                   </span>
                 )}
                 {entry?.transport && (

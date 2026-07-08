@@ -52,7 +52,7 @@ function TableShell({
 }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
-      <table className="w-full min-w-[640px] text-sm">
+      <table className="w-full min-w-[720px] text-sm">
         <thead className="bg-neutral-100 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:bg-neutral-800/60 dark:text-neutral-400">
           <tr>
             {columns.map((c) => (
@@ -68,6 +68,15 @@ function TableShell({
   );
 }
 
+const RECAP_COLUMNS = [
+  "Période",
+  "Jours travaillés",
+  "Jours de congé",
+  "Total heures",
+  "Moyenne / jour",
+  "Temps de trajet",
+];
+
 function WeeklyTable() {
   const entries = useTrackerStore((s) => s.entries);
   const weeks = useMemo(() => aggregateByWeek(entries), [entries]);
@@ -75,7 +84,7 @@ function WeeklyTable() {
   if (weeks.length === 0) return <EmptyState />;
 
   return (
-    <TableShell columns={["Semaine", "Jours travaillés", "Jours de congé", "Total heures", "Moyenne / jour"]}>
+    <TableShell columns={RECAP_COLUMNS}>
       {weeks.map((w) => (
         <tr key={w.key} className="bg-white dark:bg-neutral-900">
           <td className="px-4 py-2.5 capitalize">{formatWeekLabel(w.start)}</td>
@@ -86,6 +95,9 @@ function WeeklyTable() {
           </td>
           <td className="px-4 py-2.5">
             {w.daysWorked > 0 ? `${formatHoursDecimal(w.totalMinutes / w.daysWorked)} h` : "—"}
+          </td>
+          <td className="px-4 py-2.5 text-teal-600 dark:text-teal-400">
+            {w.commuteMinutes > 0 ? formatMinutesAsHours(w.commuteMinutes) : "—"}
           </td>
         </tr>
       ))}
@@ -100,7 +112,7 @@ function MonthlyTable() {
   if (months.length === 0) return <EmptyState />;
 
   return (
-    <TableShell columns={["Mois", "Jours travaillés", "Jours de congé", "Total heures", "Moyenne / jour"]}>
+    <TableShell columns={RECAP_COLUMNS}>
       {months.map((m) => (
         <tr key={m.key} className="bg-white dark:bg-neutral-900">
           <td className="px-4 py-2.5 capitalize">{formatMonthLabel(m.start)}</td>
@@ -111,6 +123,9 @@ function MonthlyTable() {
           </td>
           <td className="px-4 py-2.5">
             {m.daysWorked > 0 ? `${formatHoursDecimal(m.totalMinutes / m.daysWorked)} h` : "—"}
+          </td>
+          <td className="px-4 py-2.5 text-teal-600 dark:text-teal-400">
+            {m.commuteMinutes > 0 ? formatMinutesAsHours(m.commuteMinutes) : "—"}
           </td>
         </tr>
       ))}
@@ -127,6 +142,7 @@ function YearlyTable() {
   const yearTotal = months.reduce((sum, m) => sum + m.totalMinutes, 0);
   const yearDays = months.reduce((sum, m) => sum + m.daysWorked, 0);
   const yearLeaveDays = months.reduce((sum, m) => sum + m.daysOnLeave, 0);
+  const yearCommute = months.reduce((sum, m) => sum + m.commuteMinutes, 0);
 
   return (
     <div className="space-y-3">
@@ -144,11 +160,11 @@ function YearlyTable() {
         </select>
         <div className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white">
           Total {year} : {formatMinutesAsHours(yearTotal)} ({yearDays} jours travaillés, {yearLeaveDays}{" "}
-          jours de congé)
+          jours de congé, {formatMinutesAsHours(yearCommute)} de trajet)
         </div>
       </div>
 
-      <TableShell columns={["Mois", "Jours travaillés", "Jours de congé", "Total heures", "Moyenne / jour"]}>
+      <TableShell columns={RECAP_COLUMNS}>
         {months.map((m) => (
           <tr key={m.key} className="bg-white dark:bg-neutral-900">
             <td className="px-4 py-2.5 capitalize">{format(m.start, "MMMM", { locale: fr })}</td>
@@ -159,6 +175,9 @@ function YearlyTable() {
             </td>
             <td className="px-4 py-2.5">
               {m.daysWorked > 0 ? `${formatHoursDecimal(m.totalMinutes / m.daysWorked)} h` : "—"}
+            </td>
+            <td className="px-4 py-2.5 text-teal-600 dark:text-teal-400">
+              {m.commuteMinutes > 0 ? formatMinutesAsHours(m.commuteMinutes) : "—"}
             </td>
           </tr>
         ))}

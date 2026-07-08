@@ -109,6 +109,7 @@ function buildWeeklySheet(workbook: import("exceljs").Workbook, entries: Record<
     { header: "Jours de congé", key: "conges", width: 16 },
     { header: "Total heures", key: "total", width: 14 },
     { header: "Moyenne / jour (h)", key: "moyenne", width: 18 },
+    { header: "Temps de trajet (h)", key: "trajet", width: 16 },
   ];
   styleHeader(sheet.getRow(1));
 
@@ -120,6 +121,7 @@ function buildWeeklySheet(workbook: import("exceljs").Workbook, entries: Record<
       conges: week.daysOnLeave,
       total: Number(formatHoursDecimal(week.totalMinutes)),
       moyenne: week.daysWorked > 0 ? Number(formatHoursDecimal(week.totalMinutes / week.daysWorked)) : "",
+      trajet: week.commuteMinutes > 0 ? Number(formatHoursDecimal(week.commuteMinutes)) : "",
     });
   }
 }
@@ -132,6 +134,7 @@ function buildMonthlySheet(workbook: import("exceljs").Workbook, entries: Record
     { header: "Jours de congé", key: "conges", width: 16 },
     { header: "Total heures", key: "total", width: 14 },
     { header: "Moyenne / jour (h)", key: "moyenne", width: 18 },
+    { header: "Temps de trajet (h)", key: "trajet", width: 16 },
   ];
   styleHeader(sheet.getRow(1));
 
@@ -143,6 +146,7 @@ function buildMonthlySheet(workbook: import("exceljs").Workbook, entries: Record
       conges: month.daysOnLeave,
       total: Number(formatHoursDecimal(month.totalMinutes)),
       moyenne: month.daysWorked > 0 ? Number(formatHoursDecimal(month.totalMinutes / month.daysWorked)) : "",
+      trajet: month.commuteMinutes > 0 ? Number(formatHoursDecimal(month.commuteMinutes)) : "",
     });
   }
 }

@@ -129,6 +129,14 @@ export function dayTotalMinutes(entry: DayEntry | undefined): number {
   return morning + afternoon;
 }
 
+/** Total commute time for a day: home → work in the morning, work → home in the evening. */
+export function dayCommuteMinutes(entry: DayEntry | undefined): number {
+  if (!entry?.transport) return 0;
+  const morning = minutesBetween(entry.transport.heureDepartMaison ?? "", entry.matinDebut);
+  const evening = minutesBetween(entry.apremFin, entry.transport.heureArriveeMaison ?? "");
+  return morning + evening;
+}
+
 export function formatMinutesAsHours(totalMinutes: number): string {
   const h = Math.floor(totalMinutes / 60);
   const m = Math.round(totalMinutes % 60);
