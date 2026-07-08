@@ -20,6 +20,8 @@ export interface Transport {
   arrivee: string;
   distanceKm?: number;
   description?: string;
+  heureDepartMaison?: string; // format HH:mm — départ de la maison le matin
+  heureArriveeMaison?: string; // format HH:mm — arrivée à la maison le soir
 }
 
 export type LeaveStatus = "none" | "full" | "morning" | "afternoon";

@@ -2,25 +2,11 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import type { LeaveStatus, Transport } from "@/lib/types";
+import { sanitizeTransport } from "@/lib/transportValidation";
+import type { LeaveStatus } from "@/lib/types";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const LEAVE_VALUES: LeaveStatus[] = ["none", "full", "morning", "afternoon"];
-
-function sanitizeTransport(value: unknown): Transport | null {
-  if (!value || typeof value !== "object") return null;
-  const t = value as Record<string, unknown>;
-  if (typeof t.mode !== "string" || typeof t.depart !== "string" || typeof t.arrivee !== "string") {
-    return null;
-  }
-  return {
-    mode: t.mode as Transport["mode"],
-    depart: t.depart,
-    arrivee: t.arrivee,
-    distanceKm: typeof t.distanceKm === "number" ? t.distanceKm : undefined,
-    description: typeof t.description === "string" ? t.description : undefined,
-  };
-}
 
 export async function POST(request: Request) {
   const session = await getSession();

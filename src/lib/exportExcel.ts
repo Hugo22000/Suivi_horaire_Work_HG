@@ -1,5 +1,5 @@
 import { aggregateByMonth, aggregateByWeek } from "./aggregate";
-import { dayTotalMinutes, formatHoursDecimal, formatMonthLabel, formatWeekLabel, fromISODate, toISODate } from "./time";
+import { dayTotalMinutes, formatHoursDecimal, formatMonthLabel, formatWeekLabel, fromISODate, minutesBetween, toISODate } from "./time";
 import { LEAVE_LABELS, TRANSPORT_LABELS, type DayEntry } from "./types";
 
 const HEADER_FILL = { type: "pattern" as const, pattern: "solid" as const, fgColor: { argb: "FF4F46E5" } };
@@ -61,6 +61,10 @@ function buildDailySheet(workbook: import("exceljs").Workbook, entries: Record<s
     { header: "Point de départ", key: "depart", width: 18 },
     { header: "Point d'arrivée", key: "arrivee", width: 18 },
     { header: "Distance (km)", key: "distance", width: 13 },
+    { header: "Départ maison (matin)", key: "departMaison", width: 18 },
+    { header: "Trajet matin (h)", key: "trajetMatin", width: 14 },
+    { header: "Arrivée maison (soir)", key: "arriveeMaison", width: 18 },
+    { header: "Trajet soir (h)", key: "trajetSoir", width: 14 },
     { header: "Précision (autre)", key: "autre", width: 22 },
   ];
   styleHeader(sheet.getRow(1));
@@ -71,6 +75,9 @@ function buildDailySheet(workbook: import("exceljs").Workbook, entries: Record<s
     const totalMinutes = dayTotalMinutes(entry);
     const leave = entry.leave ?? "none";
     if (totalMinutes <= 0 && !entry.transport && leave === "none") continue;
+
+    const morningCommute = minutesBetween(entry.transport?.heureDepartMaison ?? "", entry.matinDebut);
+    const eveningCommute = minutesBetween(entry.apremFin, entry.transport?.heureArriveeMaison ?? "");
 
     sheet.addRow({
       date,
@@ -85,6 +92,10 @@ function buildDailySheet(workbook: import("exceljs").Workbook, entries: Record<s
       depart: entry.transport?.depart ?? "",
       arrivee: entry.transport?.arrivee ?? "",
       distance: entry.transport?.distanceKm ?? "",
+      departMaison: entry.transport?.heureDepartMaison ?? "",
+      trajetMatin: morningCommute > 0 ? Number(formatHoursDecimal(morningCommute)) : "",
+      arriveeMaison: entry.transport?.heureArriveeMaison ?? "",
+      trajetSoir: eveningCommute > 0 ? Number(formatHoursDecimal(eveningCommute)) : "",
       autre: entry.transport?.description ?? "",
     });
   }

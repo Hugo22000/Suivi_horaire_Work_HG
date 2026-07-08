@@ -83,6 +83,8 @@ export default function DayCard({ date }: { date: Date }) {
       <TransportSelector
         value={entry?.transport}
         onChange={(t) => setTransport(iso, t)}
+        matinDebut={entry?.matinDebut ?? ""}
+        apremFin={entry?.apremFin ?? ""}
       />
     </div>
   );
