@@ -1,4 +1,4 @@
-import type { DayEntry as PrismaDayEntry } from "@/generated/prisma/client";
+import type { DayEntry as PrismaDayEntry } from "@prisma/client";
 import type { DayEntry, LeaveStatus, Transport } from "./types";
 
 export function toDayEntry(row: PrismaDayEntry): DayEntry {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 import { toDayEntry } from "@/lib/entryMapper";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
