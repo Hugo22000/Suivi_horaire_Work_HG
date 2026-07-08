@@ -18,7 +18,7 @@ Les données sont stockées dans une base PostgreSQL, propres à chaque compte u
 ## Développement local
 
 1. Copier `.env.example` en `.env` et renseigner :
-   - `DATABASE_URL` / `DATABASE_URL_UNPOOLED` : connexion vers une base PostgreSQL (locale ou distante).
+   - `DATABASE_URL` : connexion vers une base PostgreSQL (locale ou distante).
    - `AUTH_SECRET` : une chaîne aléatoire (`openssl rand -base64 32`).
 2. Appliquer le schéma à la base :
    ```bash
@@ -36,7 +36,7 @@ Ouvrir [http://localhost:3000](http://localhost:3000) et créer un compte.
 
 1. Pousser ce dépôt sur GitHub (déjà fait si vous lisez ceci depuis le repo).
 2. Aller sur [vercel.com/new](https://vercel.com/new) et importer le dépôt `suivi_horaire_work_hg`.
-3. Dans l'onglet **Storage** du projet Vercel, créer/lier une base **Postgres (Neon)** : cela ajoute automatiquement les variables `DATABASE_URL` (connexion poolée, utilisée par l'application) et `DATABASE_URL_UNPOOLED` (connexion directe, utilisée pour les migrations).
+3. Dans l'onglet **Storage** du projet Vercel, créer/lier une base **Postgres (Neon)** : cela ajoute automatiquement la variable `DATABASE_URL`. Vérifiez qu'elle est bien cochée pour l'environnement **Production** (pas seulement Preview/Development).
 4. Dans **Settings → Environment Variables**, ajouter `AUTH_SECRET` avec une valeur aléatoire (`openssl rand -base64 32`).
 5. Cliquer sur **Deploy**. Le schéma de base de données est appliqué automatiquement à chaque déploiement (`prisma migrate deploy` fait partie de la commande de build).
 
