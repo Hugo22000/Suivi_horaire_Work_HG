@@ -24,13 +24,16 @@ export interface Transport {
   heureArriveeMaison?: string; // format HH:mm — arrivée à la maison le soir
 }
 
-export type LeaveStatus = "none" | "full" | "morning" | "afternoon";
+export type LeaveStatus = "none" | "full" | "morning" | "afternoon" | "ferie";
+
+export const LEAVE_STATUS_VALUES: LeaveStatus[] = ["none", "full", "morning", "afternoon", "ferie"];
 
 export const LEAVE_LABELS: Record<LeaveStatus, string> = {
   none: "Travaillé",
   full: "Congé (journée complète)",
   morning: "Congé (matin)",
   afternoon: "Congé (après-midi)",
+  ferie: "Jour férié",
 };
 
 export interface DayEntry {

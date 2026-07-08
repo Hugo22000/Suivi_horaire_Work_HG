@@ -6,16 +6,18 @@ import WeekView from "@/components/WeekView";
 import CalendarView from "@/components/CalendarView";
 import SummaryView from "@/components/SummaryView";
 import ExportView from "@/components/ExportView";
+import SettingsView from "@/components/SettingsView";
 import { useTrackerStore } from "@/lib/store";
 import type { DayEntry } from "@/lib/types";
 
-type View = "saisie" | "calendrier" | "recapitulatif" | "export";
+type View = "saisie" | "calendrier" | "recapitulatif" | "export" | "parametres";
 
 const NAV: [View, string][] = [
   ["saisie", "Saisie"],
   ["calendrier", "Calendrier"],
   ["recapitulatif", "Récapitulatif"],
   ["export", "Export"],
+  ["parametres", "Paramètres"],
 ];
 
 const LEGACY_LOCAL_STORAGE_KEY = "suivi-horaire-work-hg";
@@ -129,6 +131,7 @@ export default function AppShell({
         {view === "calendrier" && <CalendarView />}
         {view === "recapitulatif" && <SummaryView />}
         {view === "export" && <ExportView />}
+        {view === "parametres" && <SettingsView />}
       </main>
 
       <footer className="pt-4 text-center text-xs text-neutral-400 dark:text-neutral-600">

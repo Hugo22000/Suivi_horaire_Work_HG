@@ -3,10 +3,9 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { sanitizeTransport } from "@/lib/transportValidation";
-import type { LeaveStatus } from "@/lib/types";
+import { LEAVE_STATUS_VALUES, type LeaveStatus } from "@/lib/types";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const LEAVE_VALUES: LeaveStatus[] = ["none", "full", "morning", "afternoon"];
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
   const rows = Object.entries(entries as Record<string, Record<string, unknown>>)
     .filter(([date]) => DATE_REGEX.test(date))
     .map(([date, entry]) => {
-      const leave: LeaveStatus = LEAVE_VALUES.includes(entry.leave as LeaveStatus)
+      const leave: LeaveStatus = LEAVE_STATUS_VALUES.includes(entry.leave as LeaveStatus)
         ? (entry.leave as LeaveStatus)
         : "none";
       const transport = sanitizeTransport(entry.transport);

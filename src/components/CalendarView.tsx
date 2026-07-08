@@ -25,7 +25,6 @@ export default function CalendarView() {
   const [selected, setSelected] = useState<string | null>(null);
   const entries = useTrackerStore((s) => s.entries);
   const showWeekends = useUiPreferencesStore((s) => s.showWeekends);
-  const setShowWeekends = useUiPreferencesStore((s) => s.setShowWeekends);
   const days = useMemo(
     () => filterVisibleDays(getMonthDays(anchor), showWeekends),
     [anchor, showWeekends]
@@ -61,16 +60,6 @@ export default function CalendarView() {
           {formatMonthLabel(anchor)}
         </div>
       </div>
-
-      <label className="flex w-fit items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-        <input
-          type="checkbox"
-          checked={!showWeekends}
-          onChange={(e) => setShowWeekends(!e.target.checked)}
-          className="h-3.5 w-3.5"
-        />
-        Jours ouvrés uniquement (masquer samedi et dimanche)
-      </label>
 
       <div className="overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
         <div
@@ -117,6 +106,11 @@ export default function CalendarView() {
                 {(leave === "morning" || leave === "afternoon") && (
                   <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">
                     🌴 ½ congé
+                  </span>
+                )}
+                {leave === "ferie" && (
+                  <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[11px] font-semibold text-rose-700 dark:bg-rose-900/50 dark:text-rose-300">
+                    🎉 Férié
                   </span>
                 )}
                 {total > 0 && (

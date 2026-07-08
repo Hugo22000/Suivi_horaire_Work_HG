@@ -4,10 +4,9 @@ import { toDayEntry } from "@/lib/entryMapper";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { sanitizeTransport } from "@/lib/transportValidation";
-import type { LeaveStatus } from "@/lib/types";
+import { LEAVE_STATUS_VALUES, type LeaveStatus } from "@/lib/types";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const LEAVE_VALUES: LeaveStatus[] = ["none", "full", "morning", "afternoon"];
 
 export async function PUT(request: Request, { params }: { params: Promise<{ date: string }> }) {
   const session = await getSession();
@@ -25,7 +24,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ date
     return NextResponse.json({ error: "Corps de requête invalide." }, { status: 400 });
   }
 
-  const leave: LeaveStatus = LEAVE_VALUES.includes(body.leave) ? body.leave : "none";
+  const leave: LeaveStatus = LEAVE_STATUS_VALUES.includes(body.leave) ? body.leave : "none";
   const transport = sanitizeTransport(body.transport);
 
   const data = {

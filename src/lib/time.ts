@@ -123,7 +123,7 @@ export function minutesBetween(start: string, end: string): number {
 export function dayTotalMinutes(entry: DayEntry | undefined): number {
   if (!entry) return 0;
   const leave = entry.leave ?? "none";
-  if (leave === "full") return 0;
+  if (leave === "full" || leave === "ferie") return 0;
   const morning = leave === "morning" ? 0 : minutesBetween(entry.matinDebut, entry.matinFin);
   const afternoon = leave === "afternoon" ? 0 : minutesBetween(entry.apremDebut, entry.apremFin);
   return morning + afternoon;
@@ -138,4 +138,33 @@ export function formatMinutesAsHours(totalMinutes: number): string {
 
 export function formatHoursDecimal(totalMinutes: number): string {
   return (totalMinutes / 60).toFixed(2);
+}
+
+export type TimeFieldKey = "matinDebut" | "matinFin" | "apremDebut" | "apremFin";
+
+export interface DayValidationError {
+  field: TimeFieldKey;
+  message: string;
+}
+
+/** Validates the coherence of a day's time fields (independent of leave status). */
+export function validateDayTimes(
+  entry: Pick<DayEntry, "matinDebut" | "matinFin" | "apremDebut" | "apremFin">
+): DayValidationError[] {
+  const errors: DayValidationError[] = [];
+
+  if (entry.matinDebut && entry.matinFin && entry.matinFin <= entry.matinDebut) {
+    errors.push({ field: "matinFin", message: "La fin de matinée doit être après le début." });
+  }
+  if (entry.apremDebut && entry.apremFin && entry.apremFin <= entry.apremDebut) {
+    errors.push({ field: "apremFin", message: "La fin d'après-midi doit être après le début." });
+  }
+  if (entry.matinFin && entry.apremDebut && entry.apremDebut < entry.matinFin) {
+    errors.push({
+      field: "apremDebut",
+      message: "Le début d'après-midi doit être après la fin de matinée.",
+    });
+  }
+
+  return errors;
 }

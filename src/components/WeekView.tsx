@@ -18,7 +18,6 @@ export default function WeekView() {
   const [anchor, setAnchor] = useState(() => new Date());
   const entries = useTrackerStore((s) => s.entries);
   const showWeekends = useUiPreferencesStore((s) => s.showWeekends);
-  const setShowWeekends = useUiPreferencesStore((s) => s.setShowWeekends);
   const setWeekLeave = useTrackerStore((s) => s.setWeekLeave);
   const days = useMemo(
     () => filterVisibleDays(getWeekDays(anchor), showWeekends),
@@ -61,16 +60,6 @@ export default function WeekView() {
       </div>
 
       <div className="flex flex-wrap gap-x-6 gap-y-2">
-        <label className="flex w-fit items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-          <input
-            type="checkbox"
-            checked={!showWeekends}
-            onChange={(e) => setShowWeekends(!e.target.checked)}
-            className="h-3.5 w-3.5"
-          />
-          Jours ouvrés uniquement (masquer samedi et dimanche)
-        </label>
-
         <label className="flex w-fit items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
           <input
             type="checkbox"

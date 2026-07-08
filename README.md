@@ -6,12 +6,13 @@ Application Next.js pour enregistrer ses heures de travail semaine par semaine e
 
 - **Compte utilisateur** : inscription et connexion par e-mail / mot de passe, données sauvegardées en base et accessibles depuis n'importe quel appareil.
 - **Saisie hebdomadaire** : pour chaque jour de la semaine, saisie de l'heure de début et de fin du matin et de l'après-midi, avec calcul automatique du total de la journée et de la semaine.
-- **Trajet du jour** : choix du moyen de transport (Vélib + Navette, Voiture, RER, Autre solution), avec point de départ, point d'arrivée, distance en km (pour la voiture) et description libre (pour "autre").
+- **Trajet du jour** : choix du moyen de transport (Vélib + Navette, Voiture, RER, Autre solution), avec point de départ, point d'arrivée, distance en km (pour la voiture), heures de départ/arrivée maison (avec durée de trajet calculée) et description libre (pour "autre").
+- **Validation des horaires** : vérifie que les heures de fin sont après les heures de début et que l'après-midi ne commence pas avant la fin de la matinée, avec message d'erreur affiché en cas d'incohérence.
 - **Vue calendrier** : vue mensuelle type calendrier avec le total d'heures et le moyen de transport de chaque jour, et édition rapide au clic.
-- **Congés** : marquage d'un jour en congé (journée complète, matin ou après-midi) ou de la semaine entière en un clic ; ces jours sont exclus du total d'heures travaillées et comptabilisés séparément.
-- **Jours ouvrés uniquement** : option pour masquer samedi et dimanche dans la Saisie et le Calendrier.
+- **Statut du jour** : Travaillé, Congé (journée complète, matin ou après-midi) ou Jour férié, avec bascule en un clic pour la semaine entière en congés ; ces jours sont exclus du total d'heures travaillées et comptabilisés séparément.
 - **Récapitulatif** : tableaux récapitulatifs semaine par semaine, vue mois et vue année, avec totaux, moyennes et jours de congé.
 - **Export Excel** : export des données (détail journalier + récap semaine + récap mois) en fichier `.xlsx`, pour toutes les années ou une année précise.
+- **Paramètres** : option d'affichage des jours ouvrés uniquement (masquer samedi/dimanche) et changement du mot de passe du compte.
 
 Les données sont stockées dans une base PostgreSQL, propres à chaque compte utilisateur.
 
