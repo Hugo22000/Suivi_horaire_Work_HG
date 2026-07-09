@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 
 const SESSION_COOKIE = "session";
-const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 365; // 1 year — renewed on every visit (see proxy.ts)
 
 function getSecretKey() {
   const secret = process.env.AUTH_SECRET;
@@ -36,3 +36,11 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
 
 export const SESSION_COOKIE_NAME = SESSION_COOKIE;
 export const SESSION_MAX_AGE = SESSION_DURATION_SECONDS;
+
+export const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+  maxAge: SESSION_MAX_AGE,
+};
